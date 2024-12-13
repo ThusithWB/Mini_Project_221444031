@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worst Fit Memory Allocation</title>
+    <style>
+        body {
+            background-color: #72f7d2;
+        }
+        button {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px;
+        }
+        .block {
+            display: block;
+            margin: 10px;
+            width: 300px;
+            padding: 20px;
+            border: 2px solid black;
+        }
+        .allocated {
+            background-color: #cf72f7;
+        }
+    </style>
+</head>
+<body>
+<h2>Worst Fit Memory Allocation </h2>
+<div id="memory"></div>
+<button onclick="allocateMemory()">Allocate Memory</button>
+<button onclick="deallocateMemory()">Deallocate Memory</button>
+<h2>B.T.A. Wickramasinghe </h2>
+<h2>221444031 </h2>
+<script>
+    // Function to render memory blocks
+    async function renderMemoryBlocks() {
+        const response = await fetch("/memory-status");
+        const blocks = await response.json();
+        const memoryDiv = document.getElementById('memory');
+        memoryDiv.innerHTML = ''; // Clear previous blocks
+
+        blocks.forEach(block => {
+            const blockDiv = document.createElement('div');
+            blockDiv.className = 'block' + (block.isAllocated ? ' allocated' : '');
+            blockDiv.innerText = `Block ${block.index}: Size = ${block.size}, Allocated = ${block.isAllocated}`;
+            memoryDiv.appendChild(blockDiv);
+        });
+    }
+
+    // Allocate memory and refresh status
+    async function allocateMemory() {
+        const size = prompt("Enter memory request size:");
+        if (size) {
+            const response = await fetch(`/allocate?size=${size}`);
+            const result = await response.text();
+            alert(result);
+            renderMemoryBlocks(); // Refresh memory status
+        }
+    }
+
+    // Deallocate memory and refresh status
+    async function deallocateMemory() {
+        const index = prompt("Enter block index to deallocate:");
+        if (index) {
+            const response = await fetch(`/deallocate?index=${index}`);
+            const result = await response.text();
+            alert(result);
+            renderMemoryBlocks(); // Refresh memory status
+        }
+    }
+
+    // Initial render on page load
+    renderMemoryBlocks();
+</script>
+</body>
+</html>
